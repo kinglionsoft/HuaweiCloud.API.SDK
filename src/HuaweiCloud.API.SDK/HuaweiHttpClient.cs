@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using HuaweiCloud.API.SDK.Models;
 using Microsoft.Extensions.Logging;
@@ -37,12 +38,12 @@ namespace HuaweiCloud.API.SDK
 
         #region Helpers
 
-        protected virtual async Task<T> PostAsync<T>(string url, object body)
+        protected virtual async Task<T> PostAsync<T>(string url, object body, CancellationToken cancellation)
         {
             var json = _jsonSerializer.Serialize(body);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             await EnsureTokenAsync();
-            var response = await _httpClient.PostAsync(url, content);
+            var response = await _httpClient.PostAsync(url, content, cancellation);
             var responseData = await response.Content.ReadAsByteArrayAsync();
             var apiResult = _jsonSerializer.Deserialize<ApiResult<T>>(new ReadOnlySpan<byte>(responseData));
             if (apiResult.Success)

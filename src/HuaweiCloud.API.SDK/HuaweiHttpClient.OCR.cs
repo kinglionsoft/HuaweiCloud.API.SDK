@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using HuaweiCloud.API.SDK.Internal;
 using HuaweiCloud.API.SDK.Models;
@@ -20,13 +21,13 @@ namespace HuaweiCloud.API.SDK
         /// <param name="url">absolute url of the image</param>
         /// <param name="side">front or back</param>
         /// <returns></returns>
-        public Task<IdCardOcrResult> IdCardByUrlAsync(string url, string side = "front")
+        public Task<IdCardOcrResult> IdCardByUrlAsync(string url, string side = "front", CancellationToken cancellation = default)
         {
             if (string.IsNullOrEmpty(url)) throw new ArgumentNullException(nameof(url));
 
             if ("front" != side && "back" != side) throw new ArgumentOutOfRangeException(nameof(side), side, "must be front or back");
 
-            return IdCardAsync(new { url, side });
+            return IdCardAsync(new { url, side }, cancellation);
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace HuaweiCloud.API.SDK
         /// <param name="file">absolute path of the image</param>
         /// <param name="side">front or back</param>
         /// <returns></returns>
-        public Task<IdCardOcrResult> IdCardByFileAsync(string file, string side = "front")
+        public Task<IdCardOcrResult> IdCardByFileAsync(string file, string side = "front", CancellationToken cancellation = default)
         {
             if (string.IsNullOrEmpty(file)) throw new ArgumentNullException(nameof(file));
 
@@ -45,7 +46,7 @@ namespace HuaweiCloud.API.SDK
 
             var image = Utils.GetBase64OfFile(file);
 
-            return IdCardAsync(new { image, side });
+            return IdCardAsync(new { image, side }, cancellation);
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace HuaweiCloud.API.SDK
         /// <param name="fileStream">stream of the image</param>
         /// <param name="side">front or back</param>
         /// <returns></returns>
-        public async Task<IdCardOcrResult> IdCardByStreamAsync(Stream fileStream, string side = "front")
+        public async Task<IdCardOcrResult> IdCardByStreamAsync(Stream fileStream, string side = "front", CancellationToken cancellation = default)
         {
             if (fileStream == null) throw new ArgumentNullException(nameof(fileStream));
 
@@ -62,7 +63,7 @@ namespace HuaweiCloud.API.SDK
 
             var image = await Utils.GetBase64OfStreamAsync(fileStream);
 
-            return await IdCardAsync(new { image, side });
+            return await IdCardAsync(new { image, side }, cancellation);
         }
 
         /// <summary>
@@ -71,14 +72,14 @@ namespace HuaweiCloud.API.SDK
         /// <param name="data">bytes of the image</param>
         /// <param name="side">front or back</param>
         /// <returns></returns>
-        public async Task<IdCardOcrResult> IdCardByBytesAsync(byte[] data, string side = "front")
+        public async Task<IdCardOcrResult> IdCardByBytesAsync(byte[] data, string side = "front", CancellationToken cancellation = default)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             if ("front" != side && "back" != side) throw new ArgumentOutOfRangeException(nameof(side), side, "must be front or back");
             
             var image = Convert.ToBase64String(data);
 
-            return await IdCardAsync(new { image, side });
+            return await IdCardAsync(new { image, side }, cancellation);
         }
 
         /// <summary>
@@ -87,17 +88,17 @@ namespace HuaweiCloud.API.SDK
         /// <param name="base64">Base64 of the image</param>
         /// <param name="side">front or back</param>
         /// <returns></returns>
-        public async Task<IdCardOcrResult> IdCardByBase64Async(string base64, string side = "front")
+        public async Task<IdCardOcrResult> IdCardByBase64Async(string base64, string side = "front", CancellationToken cancellation = default)
         {
             if (string.IsNullOrEmpty(base64)) throw new ArgumentNullException(nameof(base64));
             if ("front" != side && "back" != side) throw new ArgumentOutOfRangeException(nameof(side), side, "must be front or back");
 
-            return await IdCardAsync(new { image = base64, side });
+            return await IdCardAsync(new { image = base64, side }, cancellation);
         }
 
-        protected virtual async Task<IdCardOcrResult> IdCardAsync(object body)
+        protected virtual async Task<IdCardOcrResult> IdCardAsync(object body, CancellationToken cancellation)
         {
-            var result = await PostAsync<IdCardOcrResult>(IdCardEndpoint, body);
+            var result = await PostAsync<IdCardOcrResult>(IdCardEndpoint, body, cancellation);
             return result;
         }
 

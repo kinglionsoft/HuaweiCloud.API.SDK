@@ -41,9 +41,9 @@ namespace HuaweiCloud.API.SDK
         protected virtual async Task<T> PostAsync<T>(string url, object body, CancellationToken cancellation)
         {
             var json = _jsonSerializer.Serialize(body);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
             await EnsureTokenAsync();
-            var response = await _httpClient.PostAsync(url, content, cancellation);
+            using var response = await _httpClient.PostAsync(url, content, cancellation);
             var responseData = await response.Content.ReadAsByteArrayAsync();
             var apiResult = _jsonSerializer.Deserialize<ApiResult<T>>(new ReadOnlySpan<byte>(responseData));
             if (apiResult.Success)

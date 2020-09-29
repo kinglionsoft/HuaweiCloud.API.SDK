@@ -22,7 +22,9 @@
         /// <summary>
         /// Retry durations in ms, <see cref="Microsoft.Extensions.Http.Polly"/>
         /// </summary>
-        public int[] RetryDurations { get; set; }
+        public int[] RetryDurations { get; set; } = { 500, 1000, 2000 };
+
+        public bool DisableServerSslValidation { get; set; }
 
         public void CloneFrom(HuaweiSdkOptions options)
         {
@@ -34,6 +36,7 @@
             Region = options.Region;
             Timeout = options.Timeout;
             RetryDurations = options.RetryDurations;
+            DisableServerSslValidation = options.DisableServerSslValidation;
         }
     }
 }

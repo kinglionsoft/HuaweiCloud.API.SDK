@@ -1,0 +1,6 @@
+<Project>
+ <PropertyGroup>
+   <NoWarn>1701;1702;1591;1574;1573</NoWarn>
+   <Version>0.0.3</Version>
+ </PropertyGroup>
+</Project>

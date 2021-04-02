@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using HuaweiCloud.API.SDK;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +10,6 @@ namespace SdkTest
     public class TestBase
     {
         protected readonly ITestOutputHelper Output;
-        protected readonly IJsonSerializer JsonSerializer;
         protected readonly HuaweiCloud.API.SDK.HuaweiHttpClient HuaweiHttpClient;
 
         public TestBase(ITestOutputHelper output)
@@ -24,7 +24,6 @@ namespace SdkTest
                 .BuildServiceProvider();
 
             HuaweiHttpClient = sp.GetRequiredService<HuaweiHttpClient>();
-            JsonSerializer = sp.GetRequiredService<IJsonSerializer>();
         }
 
         protected void WriteJson(object data) => Output.WriteLine(JsonSerializer.Serialize(data));

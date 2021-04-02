@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using HuaweiCloud.API.SDK.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
@@ -37,7 +38,12 @@ namespace HuaweiCloud.API.SDK
                     p.WaitAndRetryAsync(options.RetryDurations.Select(x => TimeSpan.FromMilliseconds(x))));
             }
 
-            services.AddSingleton<IJsonSerializer, JsonSerializer>()
+            services.AddSingleton(new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    DictionaryKeyPolicy =  JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true
+                })
                 .AddSingleton<ITokenManager, SimpleTokenManager>()
                 ;
 

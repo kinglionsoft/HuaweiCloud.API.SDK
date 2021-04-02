@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#pragma warning disable 8618
+
+using System.Text.Json.Serialization;
 
 namespace HuaweiCloud.API.SDK.Models
 {

@@ -1,4 +1,6 @@
-﻿namespace HuaweiCloud.API.SDK.Models
+﻿#pragma warning disable 8618
+
+namespace HuaweiCloud.API.SDK.Models
 {
     public sealed class IdCardOcrResult
     {

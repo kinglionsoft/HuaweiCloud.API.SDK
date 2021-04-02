@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using HuaweiCloud.API.SDK.Models;
@@ -18,19 +21,19 @@ namespace HuaweiCloud.API.SDK
         private readonly HttpClient _httpClient;
         private readonly HuaweiSdkOptions _options;
         private readonly ILogger _logger;
-        private readonly IJsonSerializer _jsonSerializer;
         private readonly ITokenManager _tokenManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public HuaweiHttpClient(HttpClient httpClient,
             IOptions<HuaweiSdkOptions> optionAccessor,
             ILogger<HuaweiHttpClient> logger,
-            IJsonSerializer jsonSerializer,
-            ITokenManager tokenManager)
+            ITokenManager tokenManager,
+            JsonSerializerOptions jsonSerializerOptions)
         {
             _httpClient = httpClient;
             _logger = logger;
-            _jsonSerializer = jsonSerializer;
             _tokenManager = tokenManager;
+            _jsonSerializerOptions = jsonSerializerOptions;
             _options = optionAccessor.Value;
 
             _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.Timeout);
@@ -40,18 +43,22 @@ namespace HuaweiCloud.API.SDK
 
         protected virtual async Task<T> PostAsync<T>(string url, object body, CancellationToken cancellation)
         {
-            var json = _jsonSerializer.Serialize(body);
-            using var content = new StringContent(json, Encoding.UTF8, "application/json");
             await EnsureTokenAsync();
-            using var response = await _httpClient.PostAsync(url, content, cancellation);
-            var responseData = await response.Content.ReadAsByteArrayAsync();
-            var apiResult = _jsonSerializer.Deserialize<ApiResult<T>>(new ReadOnlySpan<byte>(responseData));
+            using var response = await _httpClient.PostAsJsonAsync(url, body, _jsonSerializerOptions , cancellation);
+            var responseData = await response.Content.ReadAsByteArrayAsync(cancellation);
+            var apiResult = Deserialize<ApiResult<T>>(responseData);
             if (apiResult.Success)
             {
                 return apiResult.Result;
             }
             throw new HuaweiException($"url: {url}, error_code: {apiResult.ErrorCode}, error_msg: {apiResult.ErrorMsg}");
         }
+
+        protected virtual string Serialize(object data) => JsonSerializer.Serialize(data, _jsonSerializerOptions);
+
+        protected virtual T Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
+
+        protected virtual T Deserialize<T>(byte[] json) => JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
 
         #endregion
 
@@ -102,12 +109,10 @@ namespace HuaweiCloud.API.SDK
                     }
                 }
             };
-            var json = _jsonSerializer.Serialize(body);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var url = $"https://iam.{_options.Region}.myhuaweicloud.com/v3/auth/tokens?nocatalog=true";
 
-            var response = await _httpClient.PostAsync(url, content);
+            var response = await _httpClient.PostAsJsonAsync(url,body, _jsonSerializerOptions, default);
             if (response.StatusCode == HttpStatusCode.Created)
             {
                 var token = response.Headers.GetValues("X-Subject-Token").First();

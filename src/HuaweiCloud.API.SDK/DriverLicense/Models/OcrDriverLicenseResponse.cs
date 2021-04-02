@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 #pragma warning disable 8618
 
 namespace HuaweiCloud.API.SDK.Models
@@ -21,19 +22,19 @@ namespace HuaweiCloud.API.SDK.Models
         public string Address { get; set; }
 
         [JsonPropertyName("birth")]
-        public string Birth { get; set; }
+        public DateTime Birth { get; set; }
 
         [JsonPropertyName("issue_date")]
-        public string IssueDate { get; set; }
+        public DateTime IssueDate { get; set; }
 
         [JsonPropertyName("class")]
         public string Class { get; set; }
 
         [JsonPropertyName("valid_from")]
-        public string ValidFrom { get; set; }
+        public DateTime ValidFrom { get; set; }
 
         [JsonPropertyName("valid_to")]
-        public string ValidTo { get; set; }
+        public DateTime ValidTo { get; set; }
 
         [JsonPropertyName("issuing_authority")]
         public string IssuingAuthority { get; set; }

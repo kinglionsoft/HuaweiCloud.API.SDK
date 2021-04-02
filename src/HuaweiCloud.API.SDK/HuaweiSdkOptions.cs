@@ -1,4 +1,5 @@
-﻿namespace HuaweiCloud.API.SDK
+﻿#pragma warning disable 8618
+namespace HuaweiCloud.API.SDK
 {
     public sealed class HuaweiSdkOptions
     {

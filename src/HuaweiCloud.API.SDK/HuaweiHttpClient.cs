@@ -28,12 +28,17 @@ namespace HuaweiCloud.API.SDK
             IOptions<HuaweiSdkOptions> optionAccessor,
             ILogger<HuaweiHttpClient> logger,
             ITokenManager tokenManager,
-            JsonSerializerOptions jsonSerializerOptions)
+            JsonSerializerOptions? jsonSerializerOptions = null)
         {
             _httpClient = httpClient;
             _logger = logger;
             _tokenManager = tokenManager;
-            _jsonSerializerOptions = jsonSerializerOptions;
+            _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+                IgnoreNullValues = true
+            };
             _options = optionAccessor.Value;
 
             _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.Timeout);
@@ -44,10 +49,10 @@ namespace HuaweiCloud.API.SDK
         protected virtual async Task<T> PostAsync<T>(string url, object body, CancellationToken cancellation)
         {
             await EnsureTokenAsync();
-            using var response = await _httpClient.PostAsJsonAsync(url, body, _jsonSerializerOptions , cancellation);
+            using var response = await _httpClient.PostAsJsonAsync(url, body, _jsonSerializerOptions, cancellation);
             var responseData = await response.Content.ReadAsByteArrayAsync(cancellation);
             var apiResult = Deserialize<ApiResult<T>>(responseData);
-            if (apiResult.Success)
+            if (apiResult!.Success)
             {
                 return apiResult.Result;
             }
@@ -56,9 +61,9 @@ namespace HuaweiCloud.API.SDK
 
         protected virtual string Serialize(object data) => JsonSerializer.Serialize(data, _jsonSerializerOptions);
 
-        protected virtual T Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
+        protected virtual T? Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
 
-        protected virtual T Deserialize<T>(byte[] json) => JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
+        protected virtual T? Deserialize<T>(byte[] json) => JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
 
         #endregion
 
@@ -112,7 +117,7 @@ namespace HuaweiCloud.API.SDK
 
             var url = $"https://iam.{_options.Region}.myhuaweicloud.com/v3/auth/tokens?nocatalog=true";
 
-            var response = await _httpClient.PostAsJsonAsync(url,body, _jsonSerializerOptions, default);
+            var response = await _httpClient.PostAsJsonAsync(url, body, _jsonSerializerOptions, default);
             if (response.StatusCode == HttpStatusCode.Created)
             {
                 var token = response.Headers.GetValues("X-Subject-Token").First();

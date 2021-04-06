@@ -13,7 +13,7 @@ namespace HuaweiCloud.API.SDK
 
         private string _tableEndpoint;
 
-        protected string TableEndpoint => _tableEndpoint ??= $"https://ocr.{_options.Region}.myhuaweicloud.com/v2/{_options.ProjectId}/ocr/id-card";
+        protected string TableEndpoint => _tableEndpoint ??= $"https://ocr.{_options.Region}.myhuaweicloud.com/v2/{_options.ProjectId}/ocr/general-table";
 
         /// <summary>
         /// refer https://support.huaweicloud.com/api-ocr/ocr_03_0031.html

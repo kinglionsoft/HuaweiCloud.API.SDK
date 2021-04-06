@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 #pragma warning disable 8618
 
 namespace HuaweiCloud.API.SDK.Models
@@ -30,10 +31,10 @@ namespace HuaweiCloud.API.SDK.Models
         public string EngineNo { get; set; }
 
         [JsonPropertyName("register_date")]
-        public string RegisterDate { get; set; }
+        public DateTime RegisterDate { get; set; }
 
         [JsonPropertyName("issue_date")]
-        public string IssueDate { get; set; }
+        public DateTime IssueDate { get; set; }
 
         [JsonPropertyName("issuing_authority")]
         public string IssuingAuthority { get; set; }
@@ -70,6 +71,4 @@ namespace HuaweiCloud.API.SDK.Models
         [JsonPropertyName("code_number")]
         public string CodeNumber { get; set; }
     }
-
-
 }

@@ -50,7 +50,13 @@ namespace HuaweiCloud.API.SDK
         {
             await EnsureTokenAsync();
             using var response = await _httpClient.PostAsJsonAsync(url, body, _jsonSerializerOptions, cancellation);
+#if DEBUG
+            var responseData = await response.Content.ReadAsStringAsync(cancellation);
+            _logger.LogDebug(responseData);
+#else
             var responseData = await response.Content.ReadAsByteArrayAsync(cancellation);
+#endif
+
             var apiResult = Deserialize<ApiResult<T>>(responseData);
             if (apiResult!.Success)
             {

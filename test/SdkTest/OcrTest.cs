@@ -79,5 +79,18 @@ namespace SdkTest
         }
 
         #endregion
+
+        #region Table
+
+        [Theory]
+        [InlineData("https://support.huaweicloud.com/api-ocr/zh-cn_image_0282767866.png")]
+        public async Task OcrTableByUrl(string url)
+        {
+            var result = await HuaweiHttpClient.OcrTableByUrlAsync(url);
+
+            WriteJson(result);
+        }
+
+        #endregion
     }
 }

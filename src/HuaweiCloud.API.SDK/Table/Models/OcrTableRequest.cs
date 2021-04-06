@@ -7,7 +7,6 @@ namespace HuaweiCloud.API.SDK.Models
     public class OcrTableRequest
     {
         [JsonPropertyName("image")]
-        [JsonIgnore]
         public string Image { get; set; }
 
         [JsonPropertyName("url")]
@@ -19,7 +18,7 @@ namespace HuaweiCloud.API.SDK.Models
         [JsonPropertyName("return_confidence")]
         public bool ReturnConfidence { get; set; } = false;
 
-        [JsonPropertyName("return_excel")] 
+        [JsonPropertyName("return_excel")]
         public bool ReturnExcel { get; set; } = false;
     }
 }

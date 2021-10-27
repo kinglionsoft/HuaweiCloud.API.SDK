@@ -92,5 +92,48 @@ namespace SdkTest
         }
 
         #endregion
+
+        #region PlateNumber
+
+        [Theory]
+        [InlineData(@"data\PlateNumber-1.jpg")]
+        public async Task PlateNumberByFile(string file)
+        {
+            var result = await HuaweiHttpClient.PlateNumberByFileAsync(file);
+
+            WriteJson(result);
+        }
+
+        [Theory]
+        [InlineData(@"data\PlateNumber-1.jpg")]
+        public async Task PlateNumberByStream(string file)
+        {
+            await using var fs = File.OpenRead(file);
+            var result = await HuaweiHttpClient.PlateNumberByStreamAsync(fs);
+
+            WriteJson(result);
+        }
+
+        [Theory]
+        [InlineData(@"data\PlateNumber-1.jpg")]
+        public async Task PlateNumberByData(string file)
+        {
+            var bytes = await File.ReadAllBytesAsync(file);
+            var result = await HuaweiHttpClient.PlateNumberByBytesAsync(bytes);
+
+            WriteJson(result);
+        }
+
+
+        [Theory]
+        [InlineData("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.guohuanjiancai.com%2Fgccxlpm%2Fimages%2F2934349b033b5bb561e1b2e231d3d539b600bcfc.jpg&refer=http%3A%2F%2Fwww.guohuanjiancai.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1637831611&t=d498bc38a5062c8fea8892ca51a484c5")]
+        public async Task PlateNumberByUrl(string url)
+        {
+            var result = await HuaweiHttpClient.PlateNumberByUrlAsync(url);
+
+            WriteJson(result);
+        }
+
+        #endregion
     }
 }

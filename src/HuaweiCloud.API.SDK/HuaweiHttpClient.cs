@@ -57,12 +57,26 @@ namespace HuaweiCloud.API.SDK
             var responseData = await response.Content.ReadAsByteArrayAsync(cancellation);
 #endif
 
-            var apiResult = Deserialize<ApiResult<T>>(responseData);
-            if (apiResult!.Success)
+            try
             {
-                return apiResult.Result;
+                var apiResult = Deserialize<ApiResult<T>>(responseData);
+                if (apiResult!.Success)
+                {
+                    return apiResult.Result;
+                }
+                throw new HuaweiException($"url: {url}, error_code: {apiResult.ErrorCode}, error_msg: {apiResult.ErrorMsg}");
+
             }
-            throw new HuaweiException($"url: {url}, error_code: {apiResult.ErrorCode}, error_msg: {apiResult.ErrorMsg}");
+            catch (JsonException ex)
+            {
+#if DEBUG
+                var json = responseData;
+#else
+                var json = System.Text.Encoding.UTF8.GetString(responseData);
+#endif
+                _logger.LogError("反序列化失败，Error={error}, Json={json}", ex.Message, json);
+                throw;
+            }
         }
 
         protected virtual string Serialize(object data) => JsonSerializer.Serialize(data, _jsonSerializerOptions);
